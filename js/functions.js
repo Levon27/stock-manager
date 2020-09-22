@@ -1,5 +1,5 @@
-function load_data() {
-    var promise = fetch_data('');
+function load_data(stock_code) {
+    var promise = fetch_data(stock_code);
     var stock_price;
     var stock_date;
 
@@ -31,10 +31,12 @@ function load_data() {
 };
 
 function fetch_data(stock_code) {
+
     return $.ajax({
-        url: URL,
+        url: URL_HISTORY,
         data: {
             access_key: 'ff7a9dc5e3fff12d757d88cd0d795986',
+            symbols: stock_code,
             sort: 'DESC',
             limit: 100
         },
@@ -42,20 +44,50 @@ function fetch_data(stock_code) {
     });
 }
 
-function create_card() {
+async function create_card(initial_amount, buy_price, stock_code) {
     var stock_card = document.createElement('div');
-    stock_card.className = 'card';
     var id_card = 'card' + i;
-    var html = html_template.replace('%id%', id_card);
+    stock_card.className = 'card';
+    stock_card.id = id_card;
+
+    let position = await calculate_amount(initial_amount,buy_price,stock_code);
+
+    var html = html_template.replace('{{amount}}', position[0]);
+    var html = html.replace('{{variation}}', position[1]);
+    var html = html.replace('{{stock_name}}', stock_code);
+
     stock_card.innerHTML = html;
     stocks.appendChild(stock_card);
 }
-const URL = "http://api.marketstack.com/v1/eod?symbols=BPAC11.BVMF";
+
+async function calculate_amount(initial_amount, buy_price, stock_code){
+    let current_amount;
+    let variation;
+    await $.ajax({
+        url: URL_LATEST,
+        data: {
+            access_key: 'ff7a9dc5e3fff12d757d88cd0d795986',
+            symbols: stock_code,
+            sort: 'DESC',
+            limit: 100
+        },
+        dataType: 'json',
+    }).then(res =>{ 
+        variation = res.data[0].close / buy_price
+        current_amount = initial_amount*variation
+    });
+
+    return [current_amount,variation];
+}
+
+const URL_HISTORY = "http://api.marketstack.com/v1/eod";
+
+const URL_LATEST = "http://api.marketstack.com/v1/eod/latest";
 
 const html_template =     
 `
-<h5 class="card-title"> BPAC11 </h2>
-<p style="color: forestgreen;"> +100%</p>
-<p style="color: red;"> R$ 980,00</p>
+<h5 class="card-title"> {{stock_name}} </h2>
+<p style="color: forestgreen;"> +{{variation}}%</p>
+<p style="color: red;"> R$ {{amount}}</p>
 
 `
