@@ -49,7 +49,7 @@ async function create_card(initial_amount, buy_price, stock_code) {
     var id_card = 'card' + i;
     stock_card.className = 'card';
     stock_card.id = id_card;
-
+    stock_card.setAttribute('onclick','update_graph("' + stock_code+'")');
     let position = await calculate_amount(initial_amount,buy_price,stock_code);
 
     var html = html_template.replace('{{amount}}', position[0]);
@@ -78,6 +78,11 @@ async function calculate_amount(initial_amount, buy_price, stock_code){
     });
 
     return [current_amount,variation];
+}
+
+function update_graph(code){
+    $("#graph_title").text(code);
+    load_data(code);
 }
 
 const URL_HISTORY = "http://api.marketstack.com/v1/eod";

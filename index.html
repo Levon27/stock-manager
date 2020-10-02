@@ -5,6 +5,12 @@
     <link rel="icon" href="img/favicon.png">
     <script src="js/lib/Chart.min.js"></script>
     <script src="js/lib/jquery-3.5.1.min.js"></script>
+
+    <!-- SDK completo, não usar apenas para DEV -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase.js"></script>
+    <!-- Initialize Firebase -->
+    <script src="js/init-firebase.js"></script>
+
 </head>
 
 <body>
@@ -28,7 +34,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
-                    <h3 class="card-title"> BPAC11 </h3>
+                    <h3 id="graph_title" class="card-title"> Price </h3>
                     <canvas id="stock_price_graph"> </canvas>
                 </div>
             </div>
