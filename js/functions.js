@@ -51,10 +51,16 @@ async function create_card(initial_amount, buy_price, stock_code) {
     stock_card.id = id_card;
     stock_card.setAttribute('onclick','update_graph("' + stock_code+'")');
     let position = await calculate_amount(initial_amount,buy_price,stock_code);
-
+    let variation = position[1]
     var html = html_template.replace('{{amount}}', position[0]);
-    var html = html.replace('{{variation}}', position[1]);
+    var html = html.replace('{{variation}}',variation);
     var html = html.replace('{{stock_name}}', stock_code);
+
+    let signal = '';
+
+    signal = (variation < 1) ? '-' : '+'
+
+    var html = html.replace('{{signal}}', signal);
 
     stock_card.innerHTML = html;
     stocks.appendChild(stock_card);
@@ -92,7 +98,7 @@ const URL_LATEST = "http://api.marketstack.com/v1/eod/latest";
 const html_template =     
 `
 <h5 class="card-title"> {{stock_name}} </h2>
-<p style="color: forestgreen;"> +{{variation}}%</p>
+<p style="color: forestgreen;"> {{signal}}{{variation}}%</p>
 <p style="color: red;"> R$ {{amount}}</p>
 
 `
